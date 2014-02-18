@@ -1,0 +1,50 @@
+From ad8725fb07407deb688813e075b05e790dac2878 Mon Sep 17 00:00:00 2001
+From: Seth Forshee <seth.forshee@canonical.com>
+Date: Tue, 18 Feb 2014 23:07:22 +1100
+Subject: [PATCH] make ektf3k driver report non-MT events too
+
+Change-Id: Ia4f05b33f06d7a8fc74e65330f9c41df8a8ba7a9
+---
+ drivers/input/touchscreen/ektf3k.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/input/touchscreen/ektf3k.c b/drivers/input/touchscreen/ektf3k.c
+index 4b6a7e7..28fee64 100755
+--- a/drivers/input/touchscreen/ektf3k.c
++++ b/drivers/input/touchscreen/ektf3k.c
+@@ -967,6 +967,7 @@ static void elan_ktf3k_ts_report_data(struct i2c_client *client, uint8_t *buf)
+               fbits = fbits >> 1;
+               idx += 3;
+ 	    }
++          input_mt_report_pointer_emulation(ts->input_dev, true);
+           input_sync(idev);
+ 	} // checksum
+ 	else {
+@@ -1017,6 +1018,7 @@ static void elan_ktf3k_ts_report_data2(struct i2c_client *client, uint8_t *buf)
+               fbits = fbits >> 1;
+               idx += 3;
+ 	    }
++          input_mt_report_pointer_emulation(ts->input_dev, true);
+           input_sync(idev);
+ 	} // checksum
+ 	else {
+@@ -1542,11 +1544,15 @@ static int elan_ktf3k_ts_probe(struct i2c_client *client,
+ 	}
+ 	ts->input_dev->name = "elan-touchscreen";  
+ 
+-	//set_bit(BTN_TOUCH, ts->input_dev->keybit);
++	set_bit(BTN_TOUCH, ts->input_dev->keybit);
+ 	ts->abs_x_max =  pdata->abs_x_max;
+ 	ts->abs_y_max = pdata->abs_y_max;
+ 	touch_debug(DEBUG_INFO, "[Elan] Max X=%d, Max Y=%d\n", ts->abs_x_max, ts->abs_y_max);
+ 
++    input_set_abs_params(ts->input_dev, ABS_X, pdata->abs_y_min, pdata->abs_y_max, 0, 0); // for 800 * 1280 
++    input_set_abs_params(ts->input_dev, ABS_Y, pdata->abs_x_min, pdata->abs_x_max, 0, 0); // for 800 * 1280 
++    input_set_abs_params(ts->input_dev, ABS_PRESSURE, 0, MAX_FINGER_PRESSURE, 0, 0);
++
+ 	input_mt_init_slots(ts->input_dev, FINGER_NUM);
+ 	input_set_abs_params(ts->input_dev, ABS_MT_POSITION_X, pdata->abs_y_min,  pdata->abs_y_max, 0, 0); // for 800 * 1280 
+ 	input_set_abs_params(ts->input_dev, ABS_MT_POSITION_Y, pdata->abs_x_min,  pdata->abs_x_max, 0, 0);// for 800 * 1280 
+-- 
+1.8.5.3
+

@@ -105,3 +105,14 @@ CONFIG_SECURITY_SELINUX_BOOTPARAM=y
 1: Edit makebootimage.sh with paths
 2: cd systemd-initramfs; find . | cpio -o -H newc | gzip > ../minimal.initramfs
 3: ./makebootimage.sh
+
+# Whats Working
+Wifi
+fb0
+Audio -- Need to setup Pulse Audio as systemwide. Not sure why it does not work as a normal user
+
+# Whats Maybe
+Bluetooth - I can pair with my i9300 with bluez4 but obexftp doesnt work...Havent tried a keyboard yet
+
+# Not tested
+NFC

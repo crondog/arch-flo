@@ -110,6 +110,7 @@ CONFIG_SECURITY_SELINUX_BOOTPARAM=y
 Wifi
 fb0
 Audio -- Need to setup Pulse Audio as systemwide. Not sure why it does not work as a normal user
+You will also need the alsaucm files from libasound2-data_1.0.27.2-1ubuntu6_all.deb
 
 # Whats Maybe
 Bluetooth - I can pair with my i9300 with bluez4 but obexftp doesnt work...Havent tried a keyboard yet

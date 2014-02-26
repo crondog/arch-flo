@@ -16,6 +16,10 @@ There is only xf86-video-fbdev working and no DRM or anything fancy
 The Software Refresher in the kernel does not work. You will need to run my
 refresher app or fix the kernel :)
 
+The new xa code from x86-video-freedreno-git does not work. gpuaddr in
+kgsl_bo_gpuaddr comes back a 0
+
+## Quick Guide
 1: I roughly followed the instructions form
 https://github.com/borh/nexus-7-2013-arch-scripts to get a working chroot
 first.

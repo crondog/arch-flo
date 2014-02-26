@@ -76,6 +76,8 @@ Just compile and put in you ~/ or whereever so xinit can run it.
 
 # Kernel stuff
 
+You can use the kernel from here https://github.com/crondog/kernel_msm
+
 ## To get Touchscreen working
 Apply 0001-make-ektf3k-driver-report-non-MT-events-too.patch
 

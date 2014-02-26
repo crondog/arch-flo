@@ -55,8 +55,7 @@ details
 7: ln -s /etc/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service
 8: ln -s /etc/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
 
-NOTE: The wifi drivers are really flakey. You might have better luck with a
-static ip. If anything fails reboot into recovery and check /proc/last_kmsg
+Note: Disable the wpa_supplicant hook in /etc/dhcpcd.conf
 
 ## To get X working
 Since there is no framebuffer console you cannot start X manually (unless you
@@ -85,10 +84,7 @@ Apply 0001-make-ektf3k-driver-report-non-MT-events-too.patch
 I used the following additional configs to get this working. Some might not be
 necessary but it helps with debugging
 
-I havent figured out how to get fbdev working with RGBA8888 so use RGB565 for
-now
-
-CONFIG_FB_MSM_DEFAULT_DEPTH_RGB565=y
+CONFIG_FB_MSM_DEFAULT_DEPTH_BGRA8888 (with RGBA patch from robclark)
 CONFIG_FHANDLE=y
 CONFIG_DEVTMPFS=y
 CONFIG_UTS_NS=y

@@ -2,8 +2,7 @@
 
 Here are my instructions on getting Arch Linux ARM natively booting on the
 Nexus 7 Flo. Ideally this would be booting from a usb stick or a dedicated
-partition on the mmc but this is working for me now. Once I get a bluetooth
-keyboard I will try to get it working from a usb stick.
+partition on the mmc but this is working for me now.
 
 ## BUGS!!!
 There is no frambuffer console :( 
@@ -113,9 +112,7 @@ Wifi
 fb0
 Audio -- Need to setup Pulse Audio as systemwide. Not sure why it does not work as a normal user
 You will also need the alsaucm files from libasound2-data_1.0.27.2-1ubuntu6_all.deb
-
-# Whats Maybe
-Bluetooth - I can pair with my i9300 with bluez4 but obexftp doesnt work...Havent tried a keyboard yet
+Bluetooth - We now have bluez5 support :) Only tested with a Wedge keyboard
 
 # Not tested
 NFC

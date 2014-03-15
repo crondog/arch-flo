@@ -10,8 +10,6 @@ If you cannot get it booting you will need to
 reboot into recovery and check /proc/last_kmsg for the errors. Or try and build
 the UART cable (which I failed at)
 
-There is only xf86-video-fbdev working and no DRM or anything fancy
-
 The Software Refresher in the kernel does not work. You will need to run my
 refresher app or fix the kernel :)
 
@@ -22,6 +20,8 @@ kgsl_bo_gpuaddr comes back a 0
 1: I roughly followed the instructions form
 https://github.com/borh/nexus-7-2013-arch-scripts to get a working chroot
 first.
+
+1a: remove trimslice packages from chroot
 
 2: Edit the init script to point to your arch.img or partition
 
@@ -56,13 +56,17 @@ details
 
 Note: Disable the wpa_supplicant hook in /etc/dhcpcd.conf
 
-## To get X working
-Since there is no framebuffer console you cannot start X manually (unless you
-are able to get ssh working, see above) Auto login is your friend.
+## To get fbterm console
+Copy fbterm/getty@.service to /etc/systemd/system/ and fbterm/fbterm-login to
+/opt/fbterm-login and then systemctl enable getty@tty1.service
 
-Be sure to install a window manager or something first and then follow
-https://wiki.archlinux.org/index.php/Automatic_login_to_virtual_console and 
-https://wiki.archlinux.org/index.php/Start_X_at_Login
+ln -s getty@.service autovt@.service to get it on all vt's
+
+## To get X working
+Install xf86-video-freedreno-git (aur) Use the xorg.conf included
+
+Instead of filling the AUR with crap you can use the mesa and libdrm PKGBUILDs
+included. Always use the git versions as they have the latest freedreno fixes
 
 Your .xinitrc should contain something like
 ~/refresher &

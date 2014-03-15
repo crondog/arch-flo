@@ -1,0 +1,4 @@
+#!/bin/bash
+# example: fbterm-login fb1 tty1
+export FRAMEBUFFER=/dev/$1
+exec /usr/bin/fbterm -r 1 -s 24 -- /usr/bin/login < /dev/$2

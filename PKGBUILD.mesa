@@ -1,0 +1,104 @@
+# $Id: PKGBUILD 205069 2014-02-04 11:01:18Z andyrtr $
+# Maintainer: Jan de Groot <jgc@archlinux.org>
+# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+
+pkgbase=mesa
+pkgname=('freedreno-dri' 'mesa' 'mesa-libgl')
+pkgver=10.0.3
+pkgrel=1
+arch=('i686' 'x86_64')
+makedepends=('python2' 'libxml2' 'libx11' 'glproto' 'libdrm' 'dri2proto' 'libxxf86vm' 'libxdamage'
+             'libvdpau' 'wayland' 'elfutils' 'systemd')
+url="http://mesa3d.sourceforge.net"
+license=('custom')
+options=(debug !strip)
+#source=(ftp://ftp.freedesktop.org/pub/mesa/${pkgver}/MesaLib-${pkgver}.tar.bz2
+source=("Mesa-10::git://github.com/freedreno/mesa.git"
+        LICENSE)
+md5sums=('SKIP'
+         '5c65a0fe315dd347e09b1f2826a1df5a')
+
+prepare(){
+    cd ${srcdir}/?esa-*
+    echo $(cat VERSION | tr "-" "_").$(git rev-list --count HEAD)
+}
+build() {
+  cd ${srcdir}/?esa-*
+
+  autoreconf -vfi # our automake is far too new for their build system :)
+
+  ./configure --prefix=/usr \
+    --sysconfdir=/etc \
+    --with-dri-driverdir=/usr/lib/xorg/modules/dri \
+    --with-dri-drivers= --with-gallium-drivers=freedreno,swrast \
+  --with-egl-platforms=x11 --enable-gles2 --enable-gles1 \
+  --enable-gallium-egl --disable-gallium-llvm --enable-xa --disable-dri3 \
+  --enable-gbm
+  #--enable-debug
+  make
+
+  # fake installation
+  mkdir $srcdir/fakeinstall
+  make DESTDIR=${srcdir}/fakeinstall install
+}
+
+package_freedreno-dri() {
+  pkgdesc="Mesa drivers for AMD/ATI Radeon"
+  depends=('mesa-libgl' 'libtxc_dxtn' "mesa=${pkgver}")
+  conflicts=('xf86-video-ati<6.9.0-6')
+
+  install -m755 -d ${pkgdir}/usr/lib/dri
+  mkdir -p ${pkgdir}/usr/lib/xorg/modules/dri/
+  mv -v ${srcdir}/fakeinstall/usr/lib/xorg/modules/dri/{kgsl,msm}_dri.so ${pkgdir}/usr/lib/xorg/modules/dri/
+  
+}
+
+package_mesa() {
+  pkgdesc="an open-source implementation of the OpenGL specification"
+  depends=('libdrm' 'wayland' 'libxxf86vm' 'libxdamage' 'systemd' 'elfutils' )
+  optdepends=('opengl-man-pages: for the OpenGL API man pages')
+  provides=('libglapi' 'osmesa' 'libgbm' 'libgles' 'libegl' 'khrplatform-devel')
+  conflicts=('libglapi' 'osmesa' 'libgbm' 'libgles' 'libegl' 'khrplatform-devel')
+  replaces=('libglapi' 'osmesa' 'libgbm' 'libgles' 'libegl' 'khrplatform-devel')
+
+  mv -v ${srcdir}/fakeinstall/* ${pkgdir}
+  # rename libgl/EGL/glesv*.so to not conflict with blobs - may break .pc files ?
+  mv ${pkgdir}/usr/lib/libGL.so.1.2.0      ${pkgdir}/usr/lib/mesa-libGL.so.1.2.0
+  mv ${pkgdir}/usr/lib/libEGL.so.1.0.0         ${pkgdir}/usr/lib/mesa-libEGL.so.1.0.0
+  mv ${pkgdir}/usr/lib/libGLESv1_CM.so.1.1.0   ${pkgdir}/usr/lib/mesa-libGLESv1_CM.so.1.1.0
+  mv ${pkgdir}/usr/lib/libGLESv2.so.2.0.0  ${pkgdir}/usr/lib/mesa-libGLESv2.so.2.0.0
+
+  rm ${pkgdir}/usr/lib/lib{GL,EGL,GLESv1_CM,GLESv2}.so*
+  install -m755 -d "${pkgdir}/usr/share/licenses/mesa"
+  install -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/mesa/"
+}
+
+package_mesa-libgl() {
+  pkgdesc="Mesa 3-D graphics library"
+  depends=("mesa=${pkgver}")
+  provides=("libgl=${pkgver}")
+  replaces=('libgl')
+ 
+  # See FS#26284
+  install -m755 -d "${pkgdir}/usr/lib/xorg/modules/extensions"
+  ln -s libglx.xorg "${pkgdir}/usr/lib/xorg/modules/extensions/libglx.so"
+
+  #ln -s mesa-libGL.so.1.2.0      ${pkgdir}/usr/lib/libGL.so
+  #ln -s mesa-libGL.so.1.2.0      ${pkgdir}/usr/lib/libGL.so.1
+  #ln -s mesa-libGL.so.1.2.0      ${pkgdir}/usr/lib/libGL.so.1.2.0
+  ln -s mesa-libGL.so.1.2.0         ${pkgdir}/usr/lib/libGL.so
+  ln -s mesa-libGL.so.1.2.0         ${pkgdir}/usr/lib/libGL.so.1
+  ln -s mesa-libGL.so.1.2.0         ${pkgdir}/usr/lib/libGL.so.1.2.0
+  ln -s mesa-libEGL.so.1.0.0        ${pkgdir}/usr/lib/libEGL.so
+  ln -s mesa-libEGL.so.1.0.0        ${pkgdir}/usr/lib/libEGL.so.1
+  ln -s mesa-libEGL.so.1.0.0        ${pkgdir}/usr/lib/libEGL.so.1.0.0
+  ln -s mesa-libGLESv1_CM.so.1.1.0  ${pkgdir}/usr/lib/libGLESv1_CM.so
+  ln -s mesa-libGLESv1_CM.so.1.1.0  ${pkgdir}/usr/lib/libGLESv1_CM.so.1
+  ln -s mesa-libGLESv1_CM.so.1.1.0  ${pkgdir}/usr/lib/libGLESv1_CM.so.1.1.0
+  ln -s mesa-libGLESv2.so.2.0.0     ${pkgdir}/usr/lib/libGLESv2.so
+  ln -s mesa-libGLESv2.so.2.0.0     ${pkgdir}/usr/lib/libGLESv2.so.2
+  ln -s mesa-libGLESv2.so.2.0.0     ${pkgdir}/usr/lib/libGLESv2.so.2.0.0  
+
+  install -m755 -d "${pkgdir}/usr/share/licenses/mesa-libgl"
+  install -m644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/mesa-libgl/"
+}

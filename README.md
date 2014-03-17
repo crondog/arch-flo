@@ -49,8 +49,7 @@ initramfs (which I am haven't done yet)
 4: Copy firmware.service to /etc/systemd/system/ 
 5: ln -s /etc/systemd/system/firmware.service /etc/systemd/system/multi-user.target.wants/firmware.service
 
-6: Create a wpa_supplicant-nl80211@wlan0.service with your wpa_supplicant.conf
-details
+6: cp wpa_supplicant-nl80211@wlan0.service /etc/systemd/system/ and then ln -s /etc/systemd/system/wpa_supplicant-nl80211@wlan0.service /etc/systemd/system/multi-user.target.wants/wpa_supplicant-nl80211@wlan0.service Idealy you can use the original service file but since the ramdisk does not load the module, it requires the firmware.service
 7: ln -s /etc/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service
 8: ln -s /etc/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
 

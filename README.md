@@ -82,6 +82,13 @@ You can use the kernel from here https://github.com/crondog/kernel_msm
 ## To get Touchscreen working
 Apply 0001-make-ektf3k-driver-report-non-MT-events-too.patch
 
+## Debugging
+USB serial works. I had some problems connecting with the Android Composite
+Gadget however just using USB_G_SERIAL seems to work. To enable run systemctl
+enable serial-getty@ttyGS0.service and then you will be able to connect to the
+device via minicom or similar on /dev/ttyACM0. Getting kernel console boot
+messages is still a no go as the device is registered too late to work
+
 ## Kernel configs
 I used the following additional configs to get this working. Some might not be
 necessary but it helps with debugging

@@ -1,10 +1,12 @@
 [Unit]
 Description=Load wlan firmware
+Wants=network.target
+Before=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/bash -c 'echo 1 > /dev/wcnss_wlan; /usr/bin/sleep 2; echo sta > /sys/module/wlan/parameters/fwpath'
-ExecStart=/usr/bin/bash -c 'echo 1 > /sys/module/hci_smd/parameters/hcismd_set; /usr/bin/sleep 2'
+ExecStart=/usr/bin/modprobe wlan
+ExecStart=/usr/bin/bash -c 'echo 1 > /sys/module/hci_smd/parameters/hcismd_set;'
 
 [Install]
 WantedBy=multi-user.target

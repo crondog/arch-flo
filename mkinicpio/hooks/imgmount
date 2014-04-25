@@ -1,0 +1,13 @@
+#!/usr/bin/ash
+
+run_hook () {
+    mount_handler="img_mount_handler"
+}
+
+img_mount_handler() {
+    mkdir /data
+    mount -t ext4 /dev/mmcblk0p30 /data
+    mknod /dev/loop256 b 7 256
+    losetup /dev/loop256 /data/arch.img
+    mount -t ext4 -o rw,noatime /dev/loop256 /new_root
+}

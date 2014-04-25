@@ -49,9 +49,9 @@ initramfs (which I am haven't done yet)
 4: Copy firmware.service to /etc/systemd/system/ 
 5: ln -s /etc/systemd/system/firmware.service /etc/systemd/system/multi-user.target.wants/firmware.service
 
-6: cp wpa_supplicant-nl80211@wlan0.service /etc/systemd/system/ and then ln -s /etc/systemd/system/wpa_supplicant-nl80211@wlan0.service /etc/systemd/system/multi-user.target.wants/wpa_supplicant-nl80211@wlan0.service Idealy you can use the original service file but since the ramdisk does not load the module, it requires the firmware.service
-7: ln -s /etc/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service
-8: ln -s /etc/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
+6: ln -s /lib/systemd/system/wpa_supplicant-nl80211@wlan0.service /etc/systemd/system/multi-user.target.wants/wpa_supplicant-nl80211@wlan0.service
+7: ln -s /lib/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service
+8: ln -s /lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
 
 Note: Disable the wpa_supplicant hook in /etc/dhcpcd.conf
 
@@ -112,10 +112,20 @@ CONFIG_STACKTRACE=y
 CONFIG_DEBUG_BUGVERBOSE=y
 CONFIG_SECURITY_SELINUX_BOOTPARAM=y
 
-## Build initramfs
+## Build initramfs (Manually)
 1: Edit makebootimage.sh with paths
 2: cd systemd-initramfs; find . | cpio -o -H newc | gzip > ../minimal.initramfs
 3: ./makebootimage.sh
+
+
+## Build initramfs (mkinitcpio)
+1: Copy zImage to /boot/
+2: Copy modules to /lib/modules/`uname -r`
+3: Apply mkinitcpio.patch
+4: Copy hooks/imgmount and install/imgmount to /lib/initcpio
+5: sudo mkinitcpio -p linux
+6: abootimg --create boot.img -f bootimg.cfg -k /boot/zImage -r /boot/initramfs-linux.img
+
 
 # Whats Working
 Wifi

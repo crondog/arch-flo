@@ -143,7 +143,21 @@ messages is still a no go as the device is registered too late to work
 I used the following additional configs to get this working. Some might not be
 necessary but it helps with debugging
 
+Required for display/graphics:
+
 CONFIG_FB_MSM_DEFAULT_DEPTH_BGRA8888 (with RGBA patch from robclark)
+CONFIG_DRM=y
+CONFIG_MSM_KGSL_DRM=y
+
+Required for Wi-Fi/network:
+
+CONFIG_ANDROID_PARANOID_NETWORK=n
+CONFIG_MODULES=y
+CONFIG_PRIMA_WLAN=y
+CONFIG_WCNSS_CORE=y
+
+Required to boot:
+
 CONFIG_FHANDLE=y
 CONFIG_DEVTMPFS=y
 CONFIG_UTS_NS=y
@@ -154,13 +168,20 @@ CONFIG_NET_NS=y
 CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
 CONFIG_FANOTIFY=y
 CONFIG_FANOTIFY_ACCESS_PERMISSIONS=y
+CONFIG_SECURITY_SELINUX_BOOTPARAM=y
+
+Debugging:
+
 CONFIG_DETECT_HUNG_TASK=y
 CONFIG_DEBUG_SPINLOCK=y
 CONFIG_DEBUG_MUTEXES=y
 CONFIG_DEBUG_ATOMIC_SLEEP=y
 CONFIG_STACKTRACE=y
 CONFIG_DEBUG_BUGVERBOSE=y
-CONFIG_SECURITY_SELINUX_BOOTPARAM=y
+CONFIG_LOG_BUF_SHIFT=21
+CONFIG_PANIC_TIMEOUT=0
+
+If you use the kernel at https://github.com/crondog/kernel_msm, there is a default configuration named flo_defconfig which contains most of the needed options.
 
 ## Build initramfs (Manually)
 1: Edit makebootimage.sh with paths

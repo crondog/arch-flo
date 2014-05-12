@@ -33,6 +33,29 @@ first.
 
 6: Profit
 
+## Booting with MultiROM
+
+You will need to follow the guide at http://forum.xda-developers.com/showthread.php?t=2457063 first.
+
+1: The initcpio hooks have been modified to support this, so if you were using the old ones, you have to replace them with the new. You currently can't boot the same installation via both fastboot and MultiROM. 
+
+2: Boot the Nexus into Android recovery mode. Make sure /data is mounted. /data/media/0/multirom cannot be seen from normal Android.
+
+3: Create a ROM folder for ArchLinuxARM.
+
+  adb shell mkdir /data/media/0/multirom/roms/ArchLinuxARM
+
+4: Push the included rom_info.txt file. (it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type)
+
+  adb push rom_info.txt /data/media/0/multirom/roms/ArchLinuxARM/
+  
+5: Move your root image to /data/media/0/multirom/roms/ArchLinuxARM/root.img
+
+6: Make sure you have the kernel and ramdisk in /data/media/0/multirom/roms/ArchLinuxARM/boot/vmlinuz and /data/media/0/multirom/roms/ArchLinuxARM/boot/initrd.img.
+
+6a: Mount the image, and copy them (with the same name) to /boot/ in it.
+
+
 ## To get WiFi Working
 
 A normal Nexus 7 Flo boot will call /system/bin/conn_init which does a whole

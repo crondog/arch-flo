@@ -98,6 +98,16 @@ exec awesome
 Since the MSMFB_SW_REFRESHER does not seem to be working i wrote this instead.
 Just compile and put in you ~/ or whereever so xinit can run it.
 
+## Enabling ADB and RNDIS (reverse USB tethering)
+1: Create this link for ADB to be able to find the shell, etc.
+  ln -s / /system
+  
+2: Add the included systemd-tmpfiles config files. They go in /etc/tmpfiles.d, and require a reboot to apply them.
+
+ADB shell works, but you will need to set the size ($COLUMNS and $LINES) and terminal type ($TERM) manually. 
+
+To use RNDIS, plug the Nexus into a computer and bridge the virtual ethernet adapter with your local network. Then, bring up the link and get an address as usual. The interface name should be 'usb0'.
+
 # Kernel stuff
 
 You can use the kernel from here https://github.com/crondog/kernel_msm
@@ -152,6 +162,9 @@ CONFIG_SECURITY_SELINUX_BOOTPARAM=y
 
 # Whats Working
 Wifi
+ADB
+USB Reverse Tethering/RNDIS (guest)
+USB OTG (host)
 fb0
 Audio -- Need to setup Pulse Audio as systemwide. Not sure why it does not work as a normal user
 You will also need the alsaucm files from libasound2-data_1.0.27.2-1ubuntu6_all.deb

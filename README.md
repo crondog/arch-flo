@@ -98,6 +98,8 @@ exec awesome
 Since the MSMFB_SW_REFRESHER does not seem to be working i wrote this instead.
 Just compile and put in you ~/ or whereever so xinit can run it.
 
+You can also use the included systemd unit file for the refresher.
+
 ## Enabling ADB and RNDIS (reverse USB tethering)
 1: Create this link for ADB to be able to find the shell, etc.
   ln -s / /system

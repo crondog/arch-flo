@@ -1,0 +1,10 @@
+[Unit]
+Before=graphical.target
+
+[Service]
+Type=simple
+ExecStart=/bin/refresher
+
+[Install]
+WantedBy=multi-user.target
+

@@ -78,7 +78,22 @@ initramfs (which I am haven't done yet)
 
 Note: Disable the wpa_supplicant hook in /etc/dhcpcd.conf
 
-## To get fbterm console
+# Setting up shared Wi-Fi configuration between Arch and Android
+
+1: Make sure /data is mounted at boot:
+  mkdir /data
+  echo '/dev/disk/by-partlabel/userdata /data ext4 errors=remount-ro 0 0' >> /etc/fstab
+  mount /data
+
+2: Forcibly symlink the Android wpa_supplicant.conf to the Linux location.
+  ln -fs /data/misc/wifi/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant-nl80211-wlan0.conf
+  
+3: Create a name for the Android wifi group
+  groupadd -g $(stat -c '%g' /data/misc/wifi) -r android_wifi
+  
+4: Add your main user to said group, so you can access the control sockets. You will need to manually their path if you want to edit the WiFi network configureation.
+
+  ## To get fbterm console
 Copy fbterm/getty@.service to /etc/systemd/system/ and fbterm/fbterm-login to
 /opt/fbterm-login and then systemctl enable getty@tty1.service
 

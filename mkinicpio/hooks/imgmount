@@ -1,13 +1,43 @@
 #!/usr/bin/ash
 
+# You can set these variables manually inside their respective functions if
+# you do not wish to boot using MultiROM:
+# 
+# To boot using a loop-mounted image stored in /data as the root FS:
+# loop=/path/to/arch.img
+# loopfstype=ext4
+#
+# To boot using a bind-mounted subdirectory of /data as the root FS:
+# rootsubdir=/local/arch
+#
+# loop= and rootsubdir= are relative to /data on Android, not /.
+
+
 run_hook () {
-    mount_handler="img_mount_handler"
+    if [ -z "$rootsubdir" ]; then
+        if [ -z "$loop" ]; then
+            error "no loop= or rootsubdir= provided on cmdline"
+            return 1
+        else
+            msg "root is an image at: $loop"
+            mount_handler="img_mount_handler"
+        fi
+    else
+        msg "root is a subdirectory at: $rootsubdir"
+        mount_handler="dir_mount_handler"
+    fi
 }
 
 img_mount_handler() {
-    mkdir /data
-    mount -t ext4 /dev/mmcblk0p30 /data
+    mkdir /host
+    mount -t $rootfstype $root /host
     mknod /dev/loop256 b 7 256
-    losetup /dev/loop256 /data/arch.img
-    mount -t ext4 -o rw,noatime /dev/loop256 /new_root
+    losetup /dev/loop256 /host/$loop
+    mount -t $loopfstype -o rw,noatime /dev/loop256 /new_root
+}
+
+dir_mount_handler() {
+    mkdir /host
+    mount -t $rootfstype $root /host
+    mount --bind /host/$rootsubdir /new_root
 }

@@ -1,0 +1,11 @@
+[Unit]
+Description=ADB Daemon
+After=systemd-tmpfiles-setup.service
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c '/sbin/adbd 2> /var/log/adbd.err 1> /var/log/adbd.out'
+
+[Install]
+WantedBy=basic.target
+Before=network.service

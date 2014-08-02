@@ -115,6 +115,9 @@ Just compile and put in you ~/ or whereever so xinit can run it.
 
 You can also use the included systemd unit file for the refresher.
 
+1: inside the initial chroot compile refresher.c and move to /bin/refresher
+2: copy systemd/refresher.service to /etc/systemd/system/refresher.service
+
 ## Enabling ADB and RNDIS (reverse USB tethering)
 1: Create this link for ADB to be able to find the shell, etc.
   ln -s / /system

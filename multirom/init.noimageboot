@@ -1,0 +1,30 @@
+#!/sbin/busybox1 sh
+
+ROM_NAME="ArchLinux"
+_PATH="$PATH"
+export BB=/sbin/busybox1
+
+cd /
+
+$BB mount -t devtmpfs devtmpfs /dev -o mode=0755,nosuid
+
+$BB mkdir /dev/pts
+$BB mkdir /dev/socket
+
+$BB mount -t proc proc /proc -o nosuid,noexec,nodev
+$BB mount -t sysfs sys /sys -o nosuid,noexec,nodev
+
+$BB mdev -s
+
+$BB mount -t ext4 /dev/mmcblk0p30 /data
+
+# switch_root works *as long* as the new root is a mountpoint.
+# According to the manpage, this can be even bound. Good for us.
+$BB mount -o bind "/data/media/0/multirom/roms/${ROM_NAME}/root/" "/data/arch"
+
+$BB mkdir /cache
+$BB mount -t ext4 /dev/mmcblk0p23 /cache
+
+export PATH="${_PATH}"
+
+exec /sbin/busybox1 switch_root /data/arch /sbin/init

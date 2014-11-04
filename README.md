@@ -57,7 +57,7 @@ The init script needs to be modified to support this. You currently can't boot t
     ```adb shell mkdir /data/media/0/multirom/roms/<rom name>```
 3. Push the provided ```multirom/rom_info.txt``` file. You might want to edit it, it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type
     
-    ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/*\<rom name\>*/```
+    ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/<rom name>/```
 4. Move your root image to ```/data/media/0/multirom/roms/<rom name>/root.img````
 5. Edit the init script (systemd-initramfs/init) to point to your new root.img location, then rebuild the initramfs (you don't need to build the boot image for MultiROM).
 6. Make sure you have the kernel zImage in ```/data/media/0/multirom/roms/<rom name>/boot/vmlinuz``` and the initramfs in ```/data/media/0/multirom/roms/<rom name>/boot/initrd.img```
@@ -80,13 +80,18 @@ If you previously followed the image chroot instructions, make sure you delete t
 1. Replace the init script ```systemd-initramfs/sbin/init``` with my patched one from ```multirom/init.noimageboot``` and edit it; make sure the ROM name is correct.
 1. Build the initramfs (instructions at the bottom)
 1. Restart adbd as root using ```adb root``` to make it easier to push files; if your ROM doesn't support it, reboot to recovery.
+2. Make sure ```/data/arch``` exists:
+    
+    ```mkdir -p /data/arch```
 6. Make sure you have the kernel zImage in ```/data/media/0/multirom/roms/<rom name>/boot/vmlinuz``` and the initramfs in ```/data/media/0/multirom/roms/<rom name>/boot/initrd.img```
 7. Also copy these files (with the same names) to /boot/ into the chroot (```/data/media/0/multirom/roms/<rom name>/root/boot/```)
 3. Push the provided ```multirom/rom_info.txt``` file. You might want to edit it, it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type. Note that this file doesn't need to be patched, it's the same regardless of how you installed the chroot.
     
-    ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/*\<rom name\>*/```
+    ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/<rom name>/```
 
 Your chroot should now be fully working and bootable, congratulations! ;)
+
+You should be able to adapt these instructions to boot Arch using fastboot. While it should work out of the box if you simply build the Android boot image and boot it (not tested), you will have to edit ```install-arch.sh```, ```chroot.sh``` and the init script if you want to change the installation directory. Always make sure you have an empty mountpoint in /data/, e.g. ```/data/arch```, otherwise you'll get a kernel panic on boot as ```switch_root``` works only with mountpoints.
 
 ## Booting from USB with MultiROM (not tested)
 You basically have to follow the MultiROM image booting steps, but instead of placing the files into /data/media/0/multirom you will want to put them into a ```multirom``` directory inside of your fat32-formatted USB drive. You will however have to edit the init script, find the USB drive's device (it should be /dev/block/sda1 but don't count on that), mount it and pass the torch to systemd's init.

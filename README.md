@@ -55,9 +55,9 @@ The init script needs to be modified to support this. You currently can't boot t
     
     ```adb shell mkdir /data/media/0/multirom/roms/<rom name>```
 2. Restart adbd as root using ```adb root```; if your ROM doesn't support it, reboot to recovery.
-3. Push the provided rom_info.txt file. You might want to edit it, it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type
+3. Push the provided ```multirom/rom_info.txt``` file. You might want to edit it, it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type
     
-    ```adb push rom_info.txt /data/media/0/multirom/roms/*\<rom name\>*/```
+    ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/*\<rom name\>*/```
 4. Move your root image to ```/data/media/0/multirom/roms/<rom name>/root.img````
 5. Edit the init script (systemd-initramfs/init) to point to your new root.img location, then rebuild the initramfs (you don't need to build the boot image for MultiROM).
 6. Make sure you have the kernel zImage in ```/data/media/0/multirom/roms/<rom name>/boot/vmlinuz``` and the initramfs in ```/data/media/0/multirom/roms/<rom name>/boot/initrd.img```
@@ -123,10 +123,9 @@ The firmware.service is only needed since the firmware is not loaded in the init
 
 ## Getting Xorg
 
-Install [xf86-video-freedreno-git](https://aur.archlinux.org/packages/xf86-video-freedreno-git) (AUR). Use the xorg.conf included
+Install [xf86-video-freedreno-git](https://aur.archlinux.org/packages/xf86-video-freedreno-git) (AUR). Use the xorg.conf included (xorg directory).
 
-Instead of filling the AUR with crap you can use the mesa and libdrm PKGBUILDs
-included. Always use the git versions as they have the latest freedreno fixes.
+Instead of filling the AUR with crap you can use the mesa and libdrm PKGBUILDs included in the ```xorg``` directory. Always use the git versions as they have the latest freedreno fixes.
 
 ## Refreshing (refresher.c)
 
@@ -135,6 +134,17 @@ Just compile it inside of the chroot (do not crosscompile it on your computer), 
 
 You can use the included systemd unit file for the refresher:
 Copy the provided ```systemd/refresher.service``` to ```/etc/systemd/system/refresher.service```.
+
+### Step-by-step
+1. Push ```refresher.c``` to your tablet. Actually, if I were you, I'd probably clone the entire ```arch-flo``` repo to the tablet. Android works, don't bother booting Arch yet if you don't want to.
+1. Make sure ```gcc``` is installed.
+1. ```$ gcc -o refresher refresher.c```
+1. ```# cp refresher /bin/refresher```
+1. ```# chmod +x /bin/refresher```
+1. ```# cp path-to/arch-flo/systemd/refresher.service /etc/systemd/system/refresher.service```
+1. ```# systemctl enable refresher.service```
+
+From now on you'll be able to use xinit like you would on your computer, without doing weird stuff.
 
 ## Serial console
 

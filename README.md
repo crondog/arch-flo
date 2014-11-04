@@ -51,10 +51,10 @@ Also follow the basic guide above to create the chroot, then follow the followin
 
 The init script needs to be modified to support this. You currently can't boot the same boot image via both fastboot and MultiROM.
 
+1. Restart adbd as root using ```adb root```; if your ROM doesn't support it, reboot to recovery.
 1. Create a ROM folder for Arch Linux
     
     ```adb shell mkdir /data/media/0/multirom/roms/<rom name>```
-2. Restart adbd as root using ```adb root```; if your ROM doesn't support it, reboot to recovery.
 3. Push the provided ```multirom/rom_info.txt``` file. You might want to edit it, it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type
     
     ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/*\<rom name\>*/```
@@ -64,8 +64,29 @@ The init script needs to be modified to support this. You currently can't boot t
 7. Mount the image, and copy these files (with the same names) to /boot/ into it.
 
 ## Booting with MultiROM (directly from /data, no image)
+It **is** possible to run the chroot without using an image, and it's even possible to boot it.
 
-*(coming soon)*
+The non-image method has, however, some disadvantages over the image:
+
+- While using the chroot through Android, some security features such as SELinux (enforces low-level security features), *nosuid* (prevents using sudo), *noexec* (prevents running programs) and *nodev* (prevents devices from being into some mountpoint) need to be disabled on the entire /data partition where the chroot is stored. They are re-enabled on exit, but while it's running they need to be off. I don't think you should worry about this, I just want to make sure you're aware of this behavior.
+- There is a bug in my patched chroot script which causes **all** the processes in the chroot to die when **any** of the chroots exits. This happens because the process-killing code in the original script doesn't work outside of an image. I had to replace it with a slower implementation that looks for processes that come from the chroot in /proc and kills them one by one. It's not smart enough to know you're using bash in *that other chroot instance* and that you might need it. To avoid this bug you just have to brutally exit from the chroot (e.g. you close the terminal window); this way the tear-down code will not be executed and the other chroots will keep running.
+- You can't use ```df``` to know how much disk space is being taken by the chroot, because this isn't a separate filesystem. You either have to recursively use ```du``` or stay in the mistery.
+
+Now that you've been warned, you can start installing your chroot.
+If you previously followed the image chroot instructions, make sure you delete the old chroot or that you use a different ROM for this chroot.
+
+1. Download and use my [patched chroot installation scripts](https://github.com/Davideddu/nexus-7-2013-arch-scripts). Before running them, make sure you edit **both** ```install-arch.sh``` and ```chroot.sh``` and set the ROM name.
+1. Remove trimslice packages from chroot.
+1. Replace the init script ```systemd-initramfs/sbin/init``` with my patched one from ```multirom/init.noimageboot``` and edit it; make sure the ROM name is correct.
+1. Build the initramfs (instructions at the bottom)
+1. Restart adbd as root using ```adb root``` to make it easier to push files; if your ROM doesn't support it, reboot to recovery.
+6. Make sure you have the kernel zImage in ```/data/media/0/multirom/roms/<rom name>/boot/vmlinuz``` and the initramfs in ```/data/media/0/multirom/roms/<rom name>/boot/initrd.img```
+7. Also copy these files (with the same names) to /boot/ into the chroot (```/data/media/0/multirom/roms/<rom name>/root/boot/```)
+3. Push the provided ```multirom/rom_info.txt``` file. You might want to edit it, it's a plaintext config file documented at https://github.com/Tasssadar/multirom/wiki/Add-support-for-new-ROM-type. Note that this file doesn't need to be patched, it's the same regardless of how you installed the chroot.
+    
+    ```adb push multirom/rom_info.txt /data/media/0/multirom/roms/*\<rom name\>*/```
+
+Your chroot should now be fully working and bootable, congratulations! ;)
 
 ## Booting from USB with MultiROM (not tested)
 You basically have to follow the MultiROM image booting steps, but instead of placing the files into /data/media/0/multirom you will want to put them into a ```multirom``` directory inside of your fat32-formatted USB drive. You will however have to edit the init script, find the USB drive's device (it should be /dev/block/sda1 but don't count on that), mount it and pass the torch to systemd's init.

@@ -108,6 +108,8 @@ The firmware.service is only needed since the firmware is not loaded in the init
 1. ```rm /usr/lib/firmware/wlan/prima/{WCNSS_qcom_cfg.ini,WCNSS_qcom_wlan_nv.bin}``` ← these are simlinks
 1. ```cp /data/misc/wifi/{WCNSS_qcom_cfg.ini,WCNSS_qcom_wlan_nv.bin} /usr/lib/firmware/wlan/prima/``` ← these are the files which conn_init writes your mac address to - again, use /sdcard or mount /data into the chroot.
 1. Copy the provided ```firmware.service``` to ```/etc/systemd/system/```
+1. Copy the provided ```firmware.sh``` to ```/usr/local/sbin/```
+1. Copy the provided ```50-firmware.rules``` to ```/etc/udev/rules.d/```
 1. ```ln -s /etc/systemd/system/firmware.service /etc/systemd/system/multi-user.target.wants/firmware.service```
 1. ```ln -s /usr/lib/systemd/system/wpa_supplicant-nl80211@wlan0.service /etc/systemd/system/multi-user.target.wants/wpa_supplicant-nl80211@wlan0.service```
 1. ```ln -s /lib/systemd/system/dhcpcd.service /etc/systemd/system/multi-user.target.wants/dhcpcd.service```

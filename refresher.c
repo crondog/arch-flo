@@ -40,6 +40,7 @@ int fb_open(struct fb_info *fb_info){
         return 1;
     }
 
+    memset(fb_info, 0, sizeof(struct fb_info));
     fb_info->fd = fd;
     return 0;
 }
@@ -47,7 +48,7 @@ int fb_open(struct fb_info *fb_info){
 
 void flip_buffer(struct fb_info *fb_info, int n){
     if( ioctl(fb_info->fd, FBIOPAN_DISPLAY, &fb_info->var) < 0 ){
-        printf("Failed FBIOPAN_DISPLAY\n");
+        perror("Failed FBIOPAN_DISPLAY");
     }
 }
 int main(int argc, char *argv[]){
